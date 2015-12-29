@@ -9,3 +9,11 @@ app:
     - "80"
 mongo:
   image: mongo:3.2
+backup:
+  image: istepanov/mongodump
+  volumes:
+    - /srv/api/backups:/backup
+  environment:
+    CRON_SCHEDULE: "0 1 * * *"
+  links:
+    - mongo
