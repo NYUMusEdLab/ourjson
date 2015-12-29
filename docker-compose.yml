@@ -1,0 +1,11 @@
+app:
+  build: .
+  environment:
+    - MONGO_DB_NAME=myjson
+    - VIRTUAL_HOST=api.musedlab.org
+  links:
+    - mongo
+  ports:
+    - "80"
+mongo:
+  image: mongo:3.2

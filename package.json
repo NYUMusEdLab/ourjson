@@ -1,0 +1,22 @@
+{
+  "name": "musedjson",
+  "version": "0.0.1",
+  "description": "Clone of myjson.com for Musedlab",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Asyrique Thevendran <asyrique@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "mongo-key-escape": "0.0.1",
+    "mongojs": "^2.2.2",
+    "restify": "^4.0.3",
+    "shortid": "^2.2.4"
+  },
+  "engines": {
+    "node": "~4.2.0",
+    "npm": "~3.1.0"
+  }
+}
