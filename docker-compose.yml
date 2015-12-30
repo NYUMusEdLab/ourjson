@@ -12,7 +12,7 @@ mongo:
 backup:
   image: istepanov/mongodump
   volumes:
-    - /srv/api/backups:/backup
+    - /srv/app/api/backups:/backup
   environment:
     CRON_SCHEDULE: "0 1 * * *"
   links:
