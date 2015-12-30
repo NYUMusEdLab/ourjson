@@ -53,8 +53,9 @@ server.get('/', function(req, res, next) {
     status: 200,
     message: 'Welcome to MusedlabJSON API v1',
     version: 1,
-    description: "This API emulates http://myjson.com/api",
-  })
+    description: 'This API emulates http://myjson.com/api',
+  });
+  next();
 });
 server.post('/bins', filterKeys, function(req, res, next) {
   // Generate ID
