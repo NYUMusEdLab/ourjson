@@ -48,7 +48,14 @@ server.use(restify.bodyParser({ mapParams: false }));
 
 const db = mongojs(dbhost + '/' + dbname, ['bins']);
 
-
+server.get('/', function(req, res, next) {
+  res.json(200, {
+    status: 200,
+    message: 'Welcome to MusedlabJSON API v1',
+    version: 1,
+    description: "This API emulates http://myjson.com/api",
+  })
+});
 server.post('/bins', filterKeys, function(req, res, next) {
   // Generate ID
   const binId = shortid.generate();
