@@ -72,7 +72,7 @@ server.post('/bins', filterKeys, function(req, res, next) {
       });
       console.log(err);
     } else {
-      res.json(201, {uri: 'http://' + url + '/bins/' + binId});
+      res.json(201, {uri: 'https://' + url + '/bins/' + binId});
       console.log(success);
     }
   });
