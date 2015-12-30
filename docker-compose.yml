@@ -3,6 +3,8 @@ app:
   environment:
     - MONGO_DB_NAME=myjson
     - VIRTUAL_HOST=api.musedlab.org
+    - LETSENCRYPT_HOST=api.musedlab.org
+    - LETSENCRYPT_EMAIL=asyrique.at@nyu.edu
   links:
     - mongo
   ports:
