@@ -50,6 +50,7 @@ server.get('/', function(req, res, next) {
   next();
 });
 server.post('/bins', filterKeys, function(req, res, next) {
+  console.log("Post accepted");
   // Generate ID
   const binId = shortid.generate();
   db.bins.save({
@@ -73,6 +74,14 @@ server.post('/bins', filterKeys, function(req, res, next) {
 
 server.get('/bins/:binId', function(req, res, next) {
   const binId = req.params.binId;
+  if (binId === "") {
+    console.log("Null ID passed");
+    res.json(404, {
+      status: 404,
+      message: 'Not Found',
+      Description: 'We could not find a bin with that ID in our system',
+    });
+  }
   db.bins.findOne({
     binId: binId,
   }, function(err, doc) {
