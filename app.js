@@ -114,4 +114,4 @@ server.put('/bins/:binId', filterKeys, function(req, res, next) {
   next();
 });
 
-server.listen(8080);
+server.listen(80);
