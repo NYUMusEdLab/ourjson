@@ -12,11 +12,7 @@ const key = require('mongo-key-escape');
 function filterkeys(json) {
   const finalObj = {};
   Object.keys(json).forEach(function(item) {
-    if (typeof json[item] === 'object') {
-      finalObj[key.escape(item)] = filterkeys(json[item]);
-    } else {
-      finalObj[key.escape(item)] = json[item];
-    }
+    finalObj[key.escape(item)] = (typeof json[item] === 'object') ? filterkeys(json[item]) : json[item];
   });
   return finalObj;
 }
@@ -24,11 +20,7 @@ function filterkeys(json) {
 function unfilterkeys(json) {
   const finalObj = {};
   Object.keys(json).forEach(function(item) {
-    if (typeof json[item] === 'object') {
-      finalObj[key.unescape(item)] = unfilterkeys(json[item]);
-    } else {
-      finalObj[key.unescape(item)] = json[item];
-    }
+    finalObj[key.unescape(item)] = (typeof json[item] === 'object') ? unfilterkeys(json[item]) : json[item];
   });
   return finalObj;
 }
@@ -43,7 +35,6 @@ function filterKeys(req, res, next) {
 
 
 const server = restify.createServer();
-server.use(restify.CORS());
 server.use(restify.bodyParser({ mapParams: false }));
 
 const db = mongojs(dbhost + '/' + dbname, ['bins']);
