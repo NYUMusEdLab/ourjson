@@ -48,7 +48,7 @@ server.get('/', function(req, res, next) {
   });
   next();
 });
-server.post('/bins', filterKeys, function(req, res, next) {
+server.post('/bins/', filterKeys, function(req, res, next) {
   // Generate ID
   const binId = shortid.generate();
   db.bins.save({
