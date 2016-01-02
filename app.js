@@ -36,7 +36,6 @@ function filterKeys(req, res, next) {
 
 const server = restify.createServer();
 server.use(restify.bodyParser({ mapParams: false }));
-server.use(restify.CORS());
 
 const db = mongojs(dbhost + '/' + dbname, ['bins']);
 
