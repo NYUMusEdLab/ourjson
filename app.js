@@ -35,6 +35,7 @@ function filterKeys(req, res, next) {
 
 
 const server = restify.createServer();
+server.pre(restify.pre.sanitizePath());
 server.use(restify.bodyParser({ mapParams: false }));
 
 const db = mongojs(dbhost + '/' + dbname, ['bins']);
@@ -48,7 +49,7 @@ server.get('/', function(req, res, next) {
   });
   next();
 });
-server.post('/bins/', filterKeys, function(req, res, next) {
+server.post('/bins', filterKeys, function(req, res, next) {
   // Generate ID
   const binId = shortid.generate();
   db.bins.save({
@@ -113,4 +114,4 @@ server.put('/bins/:binId', filterKeys, function(req, res, next) {
   next();
 });
 
-server.listen(80);
+server.listen(8080);
