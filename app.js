@@ -10,18 +10,30 @@ const key = require('mongo-key-escape');
 
 // Functions
 function filterkeys(json) {
-  const finalObj = {};
-  Object.keys(json).forEach(function(item) {
-    finalObj[key.escape(item)] = (typeof json[item] === 'object') ? filterkeys(json[item]) : json[item];
-  });
+  const finalObj = (Array.isArray(json)) ? [] : {};
+  if (Array.isArray(json)){
+    json.forEach(function(item, index) {
+      finalObj[index] = (typeof json[index] === 'object') ? filterkeys(json[index]) : json[index];
+    });
+  } else {
+    Object.keys(json).forEach(function(item) {
+      finalObj[key.escape(item)] = (typeof json[item] === 'object') ? filterkeys(json[item]) : json[item];
+    });
+  }
   return finalObj;
 }
 
 function unfilterkeys(json) {
-  const finalObj = {};
-  Object.keys(json).forEach(function(item) {
-    finalObj[key.unescape(item)] = (typeof json[item] === 'object') ? unfilterkeys(json[item]) : json[item];
-  });
+  const finalObj = (Array.isArray(json)) ? [] : {};
+  if (Array.isArray(json)){
+    json.forEach(function(item, index) {
+      finalObj[index] = (typeof json[index] === 'object') ? unfilterkeys(json[index]) : json[index];
+    });
+  } else {
+    Object.keys(json).forEach(function(item) {
+      finalObj[key.unescape(item)] = (typeof json[item] === 'object') ? unfilterkeys(json[item]) : json[item];
+    });
+  }
   return finalObj;
 }
 
@@ -123,4 +135,4 @@ server.put('/bins/:binId', filterKeys, function(req, res, next) {
   next();
 });
 
-server.listen(80);
+server.listen(8080);
