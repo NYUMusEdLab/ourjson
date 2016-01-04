@@ -12,8 +12,9 @@ const key = require('mongo-key-escape');
 function filterkeys(json) {
   const finalObj = (Array.isArray(json)) ? [] : {};
   if (Array.isArray(json)) {
+    console.log(json , " Is array");
     json.forEach(function(item, index) {
-      finalObj[index] = (typeof json[index] === 'object') ? filterkeys(json[index]) : json[index];
+      finalObj[index] = (typeof item === 'object') ? filterkeys(item) : item;
     });
   } else {
     Object.keys(json).forEach(function(item) {
@@ -27,7 +28,7 @@ function unfilterkeys(json) {
   const finalObj = (Array.isArray(json)) ? [] : {};
   if (Array.isArray(json)) {
     json.forEach(function(item, index) {
-      finalObj[index] = (typeof json[index] === 'object') ? unfilterkeys(json[index]) : json[index];
+      finalObj[index] = (typeof item === 'object') ? unfilterkeys(item) : item ;
     });
   } else {
     Object.keys(json).forEach(function(item) {
