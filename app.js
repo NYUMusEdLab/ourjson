@@ -12,7 +12,6 @@ const key = require('mongo-key-escape');
 function filterkeys(json) {
   const finalObj = (Array.isArray(json)) ? [] : {};
   if (Array.isArray(json)) {
-    console.log(json , " Is array");
     json.forEach(function(item, index) {
       finalObj[index] = (typeof item === 'object') ? filterkeys(item) : item;
     });
@@ -28,7 +27,7 @@ function unfilterkeys(json) {
   const finalObj = (Array.isArray(json)) ? [] : {};
   if (Array.isArray(json)) {
     json.forEach(function(item, index) {
-      finalObj[index] = (typeof item === 'object') ? unfilterkeys(item) : item ;
+      finalObj[index] = (typeof item === 'object') ? unfilterkeys(item) : item;
     });
   } else {
     Object.keys(json).forEach(function(item) {
@@ -63,9 +62,9 @@ server.get('/', function(req, res, next) {
   next();
 });
 server.post('/bins', filterKeys, function(req, res, next) {
-  console.log("Post accepted");
   // Generate ID
   const binId = shortid.generate();
+  console.log('Bin ' + binId + ' created.');
   db.bins.save({
     binId: binId,
     json: req.body,
@@ -114,6 +113,14 @@ server.get('/bins/:binId', function(req, res, next) {
 
 server.put('/bins/:binId', filterKeys, function(req, res, next) {
   const binId = req.params.binId;
+  if (binId === "") {
+    console.log("Null ID passed");
+    res.json(404, {
+      status: 404,
+      message: 'Not Found',
+      Description: 'We could not find a bin with that ID in our system',
+    });
+  }
   db.bins.update({
     binId: binId,
   }, {
