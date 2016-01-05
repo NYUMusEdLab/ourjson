@@ -12,11 +12,11 @@ const key = require('mongo-key-escape');
 function filterkeys(json) {
   const finalObj = (Array.isArray(json)) ? [] : {};
   if (Array.isArray(json)) {
-    json.forEach(function(item, index) {
+    json.forEach(function filterKeysArrayForEach(item, index) {
       finalObj[index] = (typeof item === 'object') ? filterkeys(item) : item;
     });
   } else {
-    Object.keys(json).forEach(function(item) {
+    Object.keys(json).forEach(function filterKeysObjectForEach(item) {
       finalObj[key.escape(item)] = (typeof json[item] === 'object') ? filterkeys(json[item]) : json[item];
     });
   }
@@ -26,11 +26,11 @@ function filterkeys(json) {
 function unfilterkeys(json) {
   const finalObj = (Array.isArray(json)) ? [] : {};
   if (Array.isArray(json)) {
-    json.forEach(function(item, index) {
+    json.forEach(function unfilterKeysArrayForEach(item, index) {
       finalObj[index] = (typeof item === 'object') ? unfilterkeys(item) : item;
     });
   } else {
-    Object.keys(json).forEach(function(item) {
+    Object.keys(json).forEach(function unfilterKeysObjectForEach(item) {
       finalObj[key.unescape(item)] = (typeof json[item] === 'object') ? unfilterkeys(json[item]) : json[item];
     });
   }
@@ -52,7 +52,7 @@ server.use(restify.bodyParser({ mapParams: false }));
 
 const db = mongojs(dbhost + '/' + dbname, ['bins']);
 
-server.get('/', function(req, res, next) {
+server.get('/', function serverGetRoot(req, res, next) {
   res.json(200, {
     status: 200,
     message: 'Welcome to MusedlabJSON API v1',
@@ -61,33 +61,29 @@ server.get('/', function(req, res, next) {
   });
   next();
 });
-server.post('/bins', filterKeys, function(req, res, next) {
+server.post('/bins', filterKeys, function postBucket(req, res, next) {
   // Generate ID
   const binId = shortid.generate();
-  console.log('Bin ' + binId + ' created.');
   db.bins.save({
     binId: binId,
     json: req.body,
-  }, function(err, success) {
+  }, function postBucketSaveCallback(err) {
     if (err) {
       res.json(500, {
         status: 500,
         message: 'Internal Server Error',
         description: 'Your data was not saved.',
       });
-      console.log(err);
     } else {
       res.json(201, {uri: 'https://' + url + '/bins/' + binId});
-      console.log(success);
     }
   });
   next();
 });
 
-server.get('/bins/:binId', function(req, res, next) {
+server.get('/bins/:binId', function getBucketId(req, res, next) {
   const binId = req.params.binId;
-  if (binId === "") {
-    console.log("Null ID passed");
+  if (binId === '') {
     res.json(404, {
       status: 404,
       message: 'Not Found',
@@ -96,14 +92,13 @@ server.get('/bins/:binId', function(req, res, next) {
   }
   db.bins.findOne({
     binId: binId,
-  }, function(err, doc) {
+  }, function getBucketIdCallback(err, doc) {
     if (err) {
       res.json(404, {
         status: 404,
         message: 'Not Found',
         Description: 'We could not find a bin with that ID in our system',
       });
-      console.log(err);
     } else {
       res.json(200, unfilterkeys(doc.json));
     }
@@ -111,10 +106,9 @@ server.get('/bins/:binId', function(req, res, next) {
   next();
 });
 
-server.put('/bins/:binId', filterKeys, function(req, res, next) {
+server.put('/bins/:binId', filterKeys, function putBucketId(req, res, next) {
   const binId = req.params.binId;
-  if (binId === "") {
-    console.log("Null ID passed");
+  if (binId === '') {
     res.json(404, {
       status: 404,
       message: 'Not Found',
@@ -127,16 +121,14 @@ server.put('/bins/:binId', filterKeys, function(req, res, next) {
     $set: {
       json: req.body,
     },
-  }, function(err, doc) {
+  }, function putBucketIdCallback(err) {
     if (err) {
       res.json(404, {
         status: 404,
         message: 'Not Found',
         Description: 'We could not find a bin with that ID in our system',
       });
-      console.log(err);
     } else {
-      console.log(doc);
       res.json(200, unfilterkeys(req.origBody));
     }
   });
