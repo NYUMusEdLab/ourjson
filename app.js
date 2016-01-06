@@ -69,7 +69,7 @@ const db = mongojs(dbhost + '/' + dbname, ['bins']);
 server.get('/', function serverGetRoot(req, res, next) {
   res.json(200, {
     status: 200,
-    message: 'Welcome to OurJSON API v1',
+    message: 'Welcome to OurJSON API v1.0.1',
     version: 1,
     description: 'This API emulates http://myjson.com/api',
   });
