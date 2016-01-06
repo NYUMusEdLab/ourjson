@@ -89,6 +89,7 @@ server.post('/bins', filterKeys, function postBucket(req, res, next) {
         description: 'Your data was not saved',
       });
     } if (doc) {
+      res.header('Bin-ID', binId);
       res.json(201, {uri: 'https://' + url + '/bins/' + binId});
     } else {
       res.json(500, {
