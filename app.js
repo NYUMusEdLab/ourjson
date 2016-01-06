@@ -2,7 +2,7 @@
 
 const url = process.env.VIRTUAL_HOST || 'localhost:8080';
 const dbhost = 'mongo';
-const dbname = process.env.MONGO_DB_NAME || 'myjson';
+const dbname = process.env.MONGO_DB_NAME || 'ourjson';
 const restify = require('restify');
 const mongojs = require('mongojs');
 const shortid = require('shortid');
@@ -39,10 +39,24 @@ function unfilterkeys(json) {
 
 function filterKeys(req, res, next) {
   if (req.body) {
-    req.origBody = req.body;
-    req.body = filterkeys(req.body);
+    if (req.is('json')) {
+      req.origBody = req.body;
+      req.body = filterkeys(req.body);
+      next();
+    } else {
+      res.json(400, {
+        status: 400,
+        message: 'Bad Request Body',
+        description: 'The request content type is not JSON',
+      });
+    }
+  } else {
+    res.json(400, {
+      status: 400,
+      message: 'Empty Request Body',
+      description: 'You sent a POST request without a body',
+    });
   }
-  next();
 }
 
 
@@ -55,7 +69,7 @@ const db = mongojs(dbhost + '/' + dbname, ['bins']);
 server.get('/', function serverGetRoot(req, res, next) {
   res.json(200, {
     status: 200,
-    message: 'Welcome to MusedlabJSON API v1',
+    message: 'Welcome to OurJSON API v1',
     version: 1,
     description: 'This API emulates http://myjson.com/api',
   });
@@ -67,15 +81,21 @@ server.post('/bins', filterKeys, function postBucket(req, res, next) {
   db.bins.save({
     binId: binId,
     json: req.body,
-  }, function postBucketSaveCallback(err) {
+  }, function postBucketSaveCallback(err, doc) {
     if (err) {
       res.json(500, {
         status: 500,
         message: 'Internal Server Error',
-        description: 'Your data was not saved.',
+        description: 'Your data was not saved',
       });
-    } else {
+    } if (doc) {
       res.json(201, {uri: 'https://' + url + '/bins/' + binId});
+    } else {
+      res.json(500, {
+        status: 500,
+        message: 'Internal Server Error',
+        description: 'Your data was not saved',
+      });
     }
   });
   next();
@@ -87,20 +107,27 @@ server.get('/bins/:binId', function getBucketId(req, res, next) {
     res.json(404, {
       status: 404,
       message: 'Not Found',
-      Description: 'We could not find a bin with that ID in our system',
+      Description: 'There was no bin ID sent',
     });
   }
-  db.bins.findOne({
+  db.bins.find().limit(1);
+  db.bins.find({
     binId: binId,
   }, function getBucketIdCallback(err, doc) {
     if (err) {
+      res.json(500, {
+        status: 500,
+        message: 'Internal Server Error',
+        Description: 'The server failed to retrieve that ID',
+      });
+    } if (doc.length > 0) {
+      res.json(200, unfilterkeys(doc[0].json));
+    } else if (doc.length === 0) {
       res.json(404, {
         status: 404,
         message: 'Not Found',
-        Description: 'We could not find a bin with that ID in our system',
+        Description: 'We could not find a bin with the ID (' + binId + ') in our system',
       });
-    } else {
-      res.json(200, unfilterkeys(doc.json));
     }
   });
   next();
@@ -112,7 +139,7 @@ server.put('/bins/:binId', filterKeys, function putBucketId(req, res, next) {
     res.json(404, {
       status: 404,
       message: 'Not Found',
-      Description: 'We could not find a bin with that ID in our system',
+      Description: 'There was no bin ID sent',
     });
   }
   db.bins.update({
@@ -121,12 +148,18 @@ server.put('/bins/:binId', filterKeys, function putBucketId(req, res, next) {
     $set: {
       json: req.body,
     },
-  }, function putBucketIdCallback(err) {
+  }, function putBucketIdCallback(err, doc) {
     if (err) {
+      res.json(500, {
+        status: 500,
+        message: 'Internal Server Error',
+        Description: 'The server failed to retrieve that ID',
+      });
+    } if (doc.n !== 1) {
       res.json(404, {
         status: 404,
         message: 'Not Found',
-        Description: 'We could not find a bin with that ID in our system',
+        Description: 'We could not find a bin with the ID (' + binId + ') in our system',
       });
     } else {
       res.json(200, unfilterkeys(req.origBody));
