@@ -1,7 +1,9 @@
 'use strict';
 
-const url = process.env.VIRTUAL_HOST || 'localhost:8080';
-const dbhost = 'mongo';
+const port = process.env.PORT || '8080';
+const hostname = process.env.HOSTNAME || null;
+const url = process.env.VIRTUAL_HOST || 'localhost:' + port;
+const dbhost = process.env.DBHOST || 'mongo';
 const dbname = process.env.MONGO_DB_NAME || 'ourjson';
 const restify = require('restify');
 const mongojs = require('mongojs');
@@ -169,4 +171,8 @@ server.put('/bins/:binId', filterKeys, function putBucketId(req, res, next) {
   next();
 });
 
-server.listen(8080);
+if (hostname) {
+  server.listen(port, hostname);
+} else {
+  server.listen(port);
+}
