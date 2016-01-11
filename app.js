@@ -5,6 +5,7 @@ const hostname = process.env.HOSTNAME || null;
 const url = process.env.VIRTUAL_HOST || 'localhost:' + port;
 const dbhost = process.env.DBHOST || 'mongo';
 const dbname = process.env.MONGO_DB_NAME || 'ourjson';
+const protocol = process.env.HTTP_PROTOCOL || 'https';
 const restify = require('restify');
 const mongojs = require('mongojs');
 const shortid = require('shortid');
@@ -92,7 +93,7 @@ server.post('/bins', filterKeys, function postBucket(req, res, next) {
       });
     } if (doc) {
       res.header('Bin-ID', binId);
-      res.json(201, {uri: 'https://' + url + '/bins/' + binId});
+      res.json(201, {uri: protocol + '://' + url + '/bins/' + binId});
     } else {
       res.json(500, {
         status: 500,
