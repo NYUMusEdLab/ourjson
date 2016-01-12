@@ -1,7 +1,7 @@
 app:
   build: .
   environment:
-    - MONGO_DB_NAME=myjson
+    - MONGO_DB_NAME=ourjson
     - VIRTUAL_HOST=api.musedlab.org
     - LETSENCRYPT_HOST=api.musedlab.org
     - LETSENCRYPT_EMAIL=asyrique.at@nyu.edu
