@@ -10,6 +10,7 @@ const restify = require('restify');
 const mongojs = require('mongojs');
 const shortid = require('shortid');
 const key = require('mongo-key-escape');
+const spawn = require('child_process').spawn;
 
 // Functions
 function filterkeys(json) {
@@ -169,6 +170,20 @@ server.put('/bins/:binId', filterKeys, function putBucketId(req, res, next) {
       res.json(200, unfilterkeys(req.origBody));
     }
   });
+  next();
+});
+
+// Session export
+server.post('/export', function exportFunction(req, res, next) {
+  const selectedIds = req.body.ids;
+  res.set('Content-Type', 'application/json');
+  const mongoExport = spawn('mongoexport', [
+    '--db', dbname, '--collection', 'bins',
+    '--jsonArray', '--host', dbhost + ':27017',
+    '--fields', 'binId,json',
+    '--query', '{ binId: { $in: ' + JSON.stringify(selectedIds) + '} }',
+  ]).stdout.pipe(res);
+
   next();
 });
 

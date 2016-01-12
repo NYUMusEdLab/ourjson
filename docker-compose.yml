@@ -7,6 +7,8 @@ app:
     - LETSENCRYPT_EMAIL=asyrique.at@nyu.edu
   links:
     - mongo
+  ports:
+    - "127.0.0.1:8080:8080"
 mongo:
   image: mongo:3.2
 backup:
