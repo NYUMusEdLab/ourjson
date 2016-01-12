@@ -175,7 +175,7 @@ server.put('/bins/:binId', filterKeys, function putBucketId(req, res, next) {
 
 // Session export
 server.post('/export', function exportFunction(req, res, next) {
-  const selectedIds = req.body.ids;
+  const selectedIds = req.body;
   res.set('Content-Type', 'application/json');
   const mongoExport = spawn('mongoexport', [
     '--db', dbname, '--collection', 'bins',
