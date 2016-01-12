@@ -1,5 +1,6 @@
 app:
   build: .
+  restart: always
   environment:
     - MONGO_DB_NAME=ourjson
     - VIRTUAL_HOST=api.musedlab.org
@@ -8,8 +9,10 @@ app:
   links:
     - mongo
 mongo:
+  restart: always
   image: mongo:3.2
 backup:
+  restart: always
   image: istepanov/mongodump
   volumes:
     - /srv/app/api/backups:/backup
