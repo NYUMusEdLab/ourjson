@@ -16,11 +16,11 @@ function filterkeys(json) {
   const finalObj = (Array.isArray(json)) ? [] : {};
   if (Array.isArray(json)) {
     json.forEach(function filterKeysArrayForEach(item, index) {
-      finalObj[index] = (typeof item === 'object') ? filterkeys(item) : item;
+      finalObj[index] = (typeof item === 'object' && json[item] !== null) ? filterkeys(item) : item;
     });
   } else {
     Object.keys(json).forEach(function filterKeysObjectForEach(item) {
-      finalObj[key.escape(item)] = (typeof json[item] === 'object') ? filterkeys(json[item]) : json[item];
+      finalObj[key.escape(item)] = (typeof json[item] === 'object' && json[item] !== null) ? filterkeys(json[item]) : json[item];
     });
   }
   return finalObj;
@@ -30,11 +30,11 @@ function unfilterkeys(json) {
   const finalObj = (Array.isArray(json)) ? [] : {};
   if (Array.isArray(json)) {
     json.forEach(function unfilterKeysArrayForEach(item, index) {
-      finalObj[index] = (typeof item === 'object') ? unfilterkeys(item) : item;
+      finalObj[index] = (typeof item === 'object' && json[item] !== null) ? unfilterkeys(item) : item;
     });
   } else {
     Object.keys(json).forEach(function unfilterKeysObjectForEach(item) {
-      finalObj[key.unescape(item)] = (typeof json[item] === 'object') ? unfilterkeys(json[item]) : json[item];
+      finalObj[key.unescape(item)] = (typeof json[item] === 'object' && json[item] !== null) ? unfilterkeys(json[item]) : json[item];
     });
   }
   return finalObj;
