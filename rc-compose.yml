@@ -1,0 +1,11 @@
+app:
+  build: .
+  restart: always
+  environment:
+    - MONGO_DB_NAME=ourjson
+    - VIRTUAL_HOST=betapi.musedlab.org
+  links:
+    - mongo
+mongo:
+  restart: always
+  image: mongo:3.2
