@@ -1,5 +1,5 @@
 app:
-  build: .
+  build: git@github.com:NYUMusEdLab/ourjson.git
   restart: always
   environment:
     - MONGO_DB_NAME=ourjson
