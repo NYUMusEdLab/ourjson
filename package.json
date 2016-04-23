@@ -1,6 +1,6 @@
 {
   "name": "ourjson",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Clone of myjson.com for self-hosting",
   "main": "app.js",
   "scripts": {

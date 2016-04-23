@@ -3,7 +3,7 @@
 const port = process.env.PORT || '8080';
 const hostname = process.env.HOSTNAME || null;
 const url = process.env.VIRTUAL_HOST || 'localhost:' + port;
-const dbhost = process.env.DBHOST || 'mongo';
+const dbhost = process.env.DBHOST || 'localhost';
 const dbname = process.env.MONGO_DB_NAME || 'ourjson';
 const protocol = process.env.HTTP_PROTOCOL || 'https';
 const restify = require('restify');
@@ -93,7 +93,7 @@ server.post('/bins', filterKeys, function postBucket(req, res, next) {
       });
     } if (doc) {
       res.header('Bin-ID', binId);
-      res.json(201, {uri: protocol + '://' + url + '/bins/' + binId});
+      res.json(201, { uri: protocol + '://' + url + '/bins/' + binId });
     } else {
       res.json(500, {
         status: 500,
@@ -111,7 +111,7 @@ server.get('/bins/:binId', function getBucketId(req, res, next) {
     res.json(404, {
       status: 404,
       message: 'Not Found',
-      Description: 'There was no bin ID sent',
+      description: 'There was no bin ID sent',
     });
   }
   db.bins.find().limit(1);
@@ -122,7 +122,7 @@ server.get('/bins/:binId', function getBucketId(req, res, next) {
       res.json(500, {
         status: 500,
         message: 'Internal Server Error',
-        Description: 'The server failed to retrieve that ID',
+        description: 'The server failed to retrieve that ID',
       });
     } if (doc.length > 0) {
       res.json(200, unfilterkeys(doc[0].json));
@@ -130,7 +130,7 @@ server.get('/bins/:binId', function getBucketId(req, res, next) {
       res.json(404, {
         status: 404,
         message: 'Not Found',
-        Description: 'We could not find a bin with the ID (' + binId + ') in our system',
+        description: 'We could not find a bin with the ID (' + binId + ') in our system',
       });
     }
   });
@@ -143,7 +143,7 @@ server.put('/bins/:binId', filterKeys, function putBucketId(req, res, next) {
     res.json(404, {
       status: 404,
       message: 'Not Found',
-      Description: 'There was no bin ID sent',
+      description: 'There was no bin ID sent',
     });
   }
   db.bins.update({
@@ -157,18 +157,56 @@ server.put('/bins/:binId', filterKeys, function putBucketId(req, res, next) {
       res.json(500, {
         status: 500,
         message: 'Internal Server Error',
-        Description: 'The server failed to retrieve that ID',
+        description: 'The server failed to retrieve that ID',
       });
     } if (doc.n !== 1) {
       res.json(404, {
         status: 404,
         message: 'Not Found',
-        Description: 'We could not find a bin with the ID (' + binId + ') in our system',
+        description: 'We could not find a bin with the ID (' + binId + ') in our system',
       });
     } else {
       res.json(200, unfilterkeys(req.origBody));
     }
   });
+  next();
+});
+
+server.del('/bins/:binId', function deleteBucketId(req, res, next) {
+  const binId = req.params.binId;
+  if (binId === '') {
+    res.json(404, {
+      status: 404,
+      message: 'Not Found',
+      description: 'There was no bin ID sent',
+    });
+  } else {
+    db.bins.remove({
+      binId: binId,
+    }, {
+      justOne: true,
+    }, function deleteBucketIdCallback(err1, result) {
+      if (err1 || result.ok !== 1) {
+        res.json(500, {
+          status: 500,
+          message: 'Internal Server Error',
+          description: 'The server failed to delete that ID',
+        });
+      } else if (result.n === 1) {
+        res.json(200, {
+          status: 200,
+          message: 'Success',
+          description: 'Bin (' + binId + ') has been deleted.'
+        });
+      } else if (result.n === 0) {
+        res.json(404, {
+          status: 404,
+          message: 'Not Found',
+          description: 'We could not find a bin with the ID (' + binId + ') in our system',
+        });
+      }
+    });
+  }
   next();
 });
 
@@ -184,7 +222,7 @@ server.post('/export', function exportFunction(req, res, next) {
       res.json(500, {
         status: 500,
         message: 'Internal Server Error',
-        Description: 'The server failed to retrieve that information',
+        description: 'The server failed to retrieve that information',
       });
     } if (doc.length <= selectedIds.length) {
       doc.forEach(function getExportArrayify(item) {
@@ -205,7 +243,7 @@ server.post('/export', function exportFunction(req, res, next) {
       res.json(404, {
         status: 404,
         message: 'Not Found',
-        Description: 'None of the Ids ' + JSON.stringify(selectedIds) + ' were found.',
+        description: 'None of the Ids ' + JSON.stringify(selectedIds) + ' were found.',
       });
     }
   });
@@ -214,6 +252,8 @@ server.post('/export', function exportFunction(req, res, next) {
 
 if (hostname) {
   server.listen(port, hostname);
+  console.log('Server listening on ' + url);
 } else {
   server.listen(port);
+  console.log('Server listening on ' + url)
 }
