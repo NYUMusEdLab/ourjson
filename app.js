@@ -16,7 +16,7 @@ function filterkeys(json) {
   const finalObj = (Array.isArray(json)) ? [] : {};
   if (Array.isArray(json)) {
     json.forEach(function filterKeysArrayForEach(item, index) {
-      finalObj[index] = (typeof item === 'object' && json[item] !== null) ? filterkeys(item) : item;
+      finalObj[index] = (typeof item === 'object' && json[index] !== null) ? filterkeys(item) : item;
     });
   } else {
     Object.keys(json).forEach(function filterKeysObjectForEach(item) {
@@ -30,7 +30,7 @@ function unfilterkeys(json) {
   const finalObj = (Array.isArray(json)) ? [] : {};
   if (Array.isArray(json)) {
     json.forEach(function unfilterKeysArrayForEach(item, index) {
-      finalObj[index] = (typeof item === 'object' && json[item] !== null) ? unfilterkeys(item) : item;
+      finalObj[index] = (typeof item === 'object' && json[index] !== null) ? unfilterkeys(item) : item;
     });
   } else {
     Object.keys(json).forEach(function unfilterKeysObjectForEach(item) {
