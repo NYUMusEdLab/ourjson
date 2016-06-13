@@ -1,4 +1,8 @@
 # ourJSON
+
+## API version 1.1.1
+- Fix to handle `null` objects in arrays
+
 ## API version 1.1.0
 - Implemented DELETE functionality
 
