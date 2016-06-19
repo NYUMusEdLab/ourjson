@@ -263,7 +263,7 @@ server.post('/export', function exportFunction(req, res, next) {
       '--db', dbname, '--collection', 'bins',
       '--jsonArray', '--host', `${dbhost}:27017`,
       '--fields', 'binId,json',
-      '--query', `'{ binId: { $in: ${JSON.stringify(selectedIds)} } }'`,
+      '--query', `{ binId: { $in: ${JSON.stringify(selectedIds)} } }`,
     ]).stdout.pipe(res);
   } else {
     res.json(400, {
