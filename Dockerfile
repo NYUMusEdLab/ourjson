@@ -1,4 +1,4 @@
-FROM mhart/alpine-node:4.4
+FROM mused/ourjson:base
 MAINTAINER Asyrique Thevendran <tech@musedlab.org>
 
 COPY . /srv/app
