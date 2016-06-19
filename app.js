@@ -10,6 +10,7 @@ const restify = require('restify');
 const mongojs = require('mongojs');
 const shortid = require('shortid');
 const key = require('mongo-key-escape');
+const spawn = require('child_process').spawn;
 
 // Functions
 function filterkeys(json) {
@@ -66,6 +67,7 @@ function filterKeys(req, res, next) {
 const server = restify.createServer();
 server.pre(restify.pre.sanitizePath());
 server.use(restify.bodyParser({ mapParams: false }));
+server.use(restify.queryParser());
 
 const db = mongojs(dbhost + '/' + dbname, ['bins']);
 
@@ -212,41 +214,64 @@ server.del('/bins/:binId', function deleteBucketId(req, res, next) {
 
 // Session export
 server.post('/export', function exportFunction(req, res, next) {
+  const format = req.query.format || 'json';
   const selectedIds = req.body;
-  const errArray = selectedIds;
-  res.set('Content-Type', 'application/json');
-  const retval = [];
-  db.bins.find().limit(selectedIds.length);
-  db.bins.find({ binId: { $in: selectedIds} }, function getExportCallback(err, doc) {
-    if (err) {
-      res.json(500, {
-        status: 500,
-        message: 'Internal Server Error',
-        description: 'The server failed to retrieve that information',
-      });
-    } if (doc.length <= selectedIds.length) {
-      doc.forEach(function getExportArrayify(item) {
-        retval.push(item.json);
-        errArray.splice(errArray.indexOf(item.binId), 1);
-      });
-      if (errArray.length > 0) {
-        res.json(200, {
-          data: unfilterkeys(retval),
-          err: errArray,
+  if (format === 'json') {
+    const errArray = selectedIds;
+    res.set('Content-Type', 'application/json');
+    const retval = [];
+    db.bins.find().limit(selectedIds.length);
+    db.bins.find({ binId: { $in: selectedIds } }, { _id: 0 }, function getExportCallback(err, doc) {
+      if (err) {
+        res.json(500, {
+          status: 500,
+          message: 'Internal Server Error',
+          description: 'The server failed to retrieve that information',
+        });
+      } if (doc.length <= selectedIds.length) {
+        doc.forEach(function getExportArrayify(item) {
+          retval.push(item);
+          errArray.splice(errArray.indexOf(item.binId), 1);
+        });
+        if (errArray.length > 0) {
+          res.json(200, {
+            data: unfilterkeys(retval),
+            err: errArray,
+          });
+        } else {
+          res.json(200, {
+            data: unfilterkeys(retval),
+          });
+        }
+      } else if (doc.length === 0) {
+        res.json(404, {
+          status: 404,
+          message: 'Not Found',
+          description: `None of the Ids ${JSON.stringify(selectedIds)} were found.`,
         });
       } else {
-        res.json(200, {
-          data: unfilterkeys(retval),
+        res.json(400, {
+          status: 400,
+          message: 'Malformed request',
+          description: `Too many documents matching ${JSON.stringify(selectedIds)} were found.`,
         });
       }
-    } else if (doc.length === 0) {
-      res.json(404, {
-        status: 404,
-        message: 'Not Found',
-        description: 'None of the Ids ' + JSON.stringify(selectedIds) + ' were found.',
-      });
-    }
-  });
+    });
+  } else if (format === 'mongoexport') {
+    res.set('Content-Type', 'application/json');
+    const mongoExport = spawn('mongoexport', [
+      '--db', dbname, '--collection', 'bins',
+      '--jsonArray', '--host', `${dbhost}:27017`,
+      '--fields', 'binId,json',
+      '--query', `'{ binId: { $in: ${JSON.stringify(selectedIds)} } }'`,
+    ]).stdout.pipe(res);
+  } else {
+    res.json(400, {
+      status: 400,
+      message: 'Malformed request',
+      description: `Too many documents matching ${JSON.stringify(selectedIds)} were found.`,
+    });
+  }
   next();
 });
 
