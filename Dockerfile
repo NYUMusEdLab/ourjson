@@ -1,4 +1,4 @@
-FROM mused/ourjson:base
+FROM musedlab/ourjson:base
 MAINTAINER Asyrique Thevendran <tech@musedlab.org>
 
 COPY . /srv/app
