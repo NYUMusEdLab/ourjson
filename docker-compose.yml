@@ -11,6 +11,7 @@ services:
       - LETSENCRYPT_EMAIL=asyrique.at@nyu.edu
     networks:
       - app
+      - bridge
   mongo:
     restart: unless-stopped
     image: mvertes/alpine-mongo:3.2.4-1
@@ -32,6 +33,9 @@ volumes:
   mongo:
     driver: local
 networks:
+  default:
+    external:
+      name: bridge
   app:
     driver: bridge
   backup:
