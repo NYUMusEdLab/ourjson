@@ -1,23 +1,37 @@
-app:
-  build: .
-  restart: always
-  environment:
-    - DBHOST=mongo
-    - MONGO_DB_NAME=ourjson
-    - VIRTUAL_HOST=api.musedlab.org
-    - LETSENCRYPT_HOST=api.musedlab.org
-    - LETSENCRYPT_EMAIL=asyrique.at@nyu.edu
-  links:
-    - mongo
-mongo:
-  restart: always
-  image: mongo:3.2
-backup:
-  restart: always
-  image: istepanov/mongodump
+version: '2'
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      - DBHOST=mongo
+      - MONGO_DB_NAME=ourjson
+      - VIRTUAL_HOST=api.musedlab.org
+      - LETSENCRYPT_HOST=api.musedlab.org
+      - LETSENCRYPT_EMAIL=asyrique.at@nyu.edu
+    networks:
+      - app
+    mongo:
+      restart: unless-stopped
+      image: mvertes/alpine-mongo:3.2.4-1
+      ports:
+        - "127.0.0.1:27017:27017"
+      volumes:
+        - mongo:/data/db
+    backup:
+      restart: unless-stopped
+      image: istepanov/mongodump
+      volumes:
+        - /srv/app/api/backups:/backup
+      environment:
+        CRON_SCHEDULE: "0 1 * * *"
+      networks:
+        - backup
   volumes:
-    - /srv/app/api/backups:/backup
-  environment:
-    CRON_SCHEDULE: "0 1 * * *"
-  links:
-    - mongo
+    mongo:
+      driver: local
+  networks:
+    app:
+      driver: bridge
+    backup:
+      driver: bridge
