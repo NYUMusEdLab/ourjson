@@ -18,6 +18,9 @@ services:
       - "127.0.0.1:27017:27017"
     volumes:
       - mongo:/data/db
+    networks:
+      - app
+      - backup
   backup:
     restart: unless-stopped
     image: istepanov/mongodump
