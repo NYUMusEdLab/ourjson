@@ -11,27 +11,28 @@ services:
       - LETSENCRYPT_EMAIL=asyrique.at@nyu.edu
     networks:
       - app
-    mongo:
-      restart: unless-stopped
-      image: mvertes/alpine-mongo:3.2.4-1
-      ports:
-        - "127.0.0.1:27017:27017"
-      volumes:
-        - mongo:/data/db
-    backup:
-      restart: unless-stopped
-      image: istepanov/mongodump
-      volumes:
-        - /srv/app/api/backups:/backup
-      environment:
-        CRON_SCHEDULE: "0 1 * * *"
-      networks:
-        - backup
-  volumes:
-    mongo:
-      driver: local
-  networks:
-    app:
-      driver: bridge
-    backup:
-      driver: bridge
+  mongo:
+    restart: unless-stopped
+    image: mvertes/alpine-mongo:3.2.4-1
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo:/data/db
+  backup:
+    restart: unless-stopped
+    image: istepanov/mongodump
+    volumes:
+      - /srv/app/api/backups:/backup
+    environment:
+      CRON_SCHEDULE: "0 1 * * *"
+    networks:
+      - backup
+
+volumes:
+  mongo:
+    driver: local
+networks:
+  app:
+    driver: bridge
+  backup:
+    driver: bridge
