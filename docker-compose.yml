@@ -9,7 +9,9 @@ services:
       - VIRTUAL_HOST=api.musedlab.org
       - LETSENCRYPT_HOST=api.musedlab.org
       - LETSENCRYPT_EMAIL=asyrique.at@nyu.edu
-    network_mode: "bridge"
+    networks:
+      - app
+      - bridge
   mongo:
     restart: unless-stopped
     image: mvertes/alpine-mongo:3.2.4-1
@@ -17,7 +19,8 @@ services:
       - "127.0.0.1:27017:27017"
     volumes:
       - mongo:/data/db
-    network_mode: "bridge"
+    networks:
+      - app
   backup:
     restart: unless-stopped
     image: istepanov/mongodump
@@ -25,7 +28,17 @@ services:
       - /srv/app/api/backups:/backup
     environment:
       CRON_SCHEDULE: "0 1 * * *"
-    network_mode: "bridge"
+    networks:
+      - backup
 volumes:
   mongo:
     driver: local
+
+networks:
+  bridge:
+    external:
+      name: bridge
+  app:
+    driver: bridge
+  backup:
+    driver: bridge
