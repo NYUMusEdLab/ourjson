@@ -1,7 +1,7 @@
 {
   "name": "ourjson",
-  "version": "1.2.1",
-  "description": "Clone of myjson.com for self-hosting",
+  "version": "2.0.0",
+  "description": "Musedlab JSON store and analytics",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,13 +10,15 @@
   "author": "Asyrique Thevendran <asyrique@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "koa": "^2.1.0",
+    "koa-bodyparser": "^4.1.0",
+    "koa-router": "^7.0.0",
     "mongo-key-escape": "0.0.1",
     "mongojs": "^2.2.2",
-    "restify": "^4.1.1",
-    "shortid": "^2.2.4"
+    "useragent": "^2.1.12"
   },
   "engines": {
-    "node": "~4.2.0",
-    "npm": "~3.1.0"
+    "node": "~7.6.0",
+    "npm": "~4.2.0"
   }
 }
