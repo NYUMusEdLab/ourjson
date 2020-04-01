@@ -1,22 +1,15 @@
 {
   "name": "ourjson",
-  "version": "1.2.1",
-  "description": "Clone of myjson.com for self-hosting",
-  "main": "app.js",
+  "version": "2.0.0",
+  "description": "Clone of myjson.com for hosting as an AWS lambda function",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "deploy": "bash deploy.sh"
   },
-  "author": "Asyrique Thevendran <asyrique@gmail.com>",
+  "author": "Asyrique Thevendran <asyrique@gmail.com>, Matthew Kaney",
   "license": "ISC",
   "dependencies": {
-    "mongo-key-escape": "0.0.1",
-    "mongojs": "^2.2.2",
-    "restify": "^4.1.1",
     "shortid": "^2.2.4"
-  },
-  "engines": {
-    "node": "~4.2.0",
-    "npm": "~3.1.0"
   }
 }

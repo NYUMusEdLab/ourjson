@@ -1,22 +1,11 @@
 # ourJSON
 
-## API version 1.2.0
-- Added a `format` query param on the `/export` endpoint. This endpoint now supports outputting in JSON array format or MongoExport Array format. If not set, the default output will be JSON.
+MusED Lab's online JSON storage API. Currently implemented in AWS as a Lambda function
+that reads and writes data to a DynamoDB table, both named 'mused-storage'.
 
-## API version 1.1.1
-- Fix to handle `null` objects in arrays
-
-## API version 1.1.0
-- Implemented DELETE functionality
-
-To recreate app without rebuilding, run:
-```
-docker-compose build app
-docker-compose up -d --no-deps app
-```
-
-else
+To deploy a new version of the function (you need to have the AWS command line interface
+installed and have permissions to update the function code):
 
 ```
-docker-compose up -d
+npm run deploy
 ```
