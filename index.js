@@ -1,6 +1,8 @@
 const AWS = require("aws-sdk");
 const shortid = require("shortid");
 
+const { strip } = require("./third_party/strip.js");
+
 exports.handler = async event => {
   // Pull proxy path, request method and body from event
   let {
@@ -10,6 +12,8 @@ exports.handler = async event => {
     pathParameters: { proxy },
     body
   } = event;
+
+  proxy = strip(proxy);
 
   if (method === "GET" && proxy === "") {
     return getRoot();
@@ -55,7 +59,11 @@ async function postNewBin(body) {
             TableName: "mused-storage",
             Item: {
               binId: { S: binId },
-              json: { M: AWS.DynamoDB.Converter.marshall(JSON.parse(body)) }
+              json: {
+                M: AWS.DynamoDB.Converter.marshall(JSON.parse(body), {
+                  convertEmptyValues: true
+                })
+              }
             },
             ConditionExpression: "attribute_not_exists(binId)"
           })
@@ -120,7 +128,11 @@ async function putBin(binId, body) {
         TableName: "mused-storage",
         Item: {
           binId: { S: binId },
-          json: { M: AWS.DynamoDB.Converter.marshall(JSON.parse(body)) }
+          json: {
+            M: AWS.DynamoDB.Converter.marshall(JSON.parse(body), {
+              convertEmptyValues: true
+            })
+          }
         },
         ConditionExpression: "attribute_exists(binId)"
       })
